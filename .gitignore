@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Build & TypeScript cache
+dist/
+**/dist/
+dist-ssr/
+*.tsbuildinfo
+
+# Local environment secrets (never commit)
+.env
+.env.*
+!.env.example
+*.local
+
+# Firebase / Supabase local state & logs
+.firebase/
+firebase-debug.log
+firebase-debug.*.log
+.supabase/
+
+# Test artifacts
+tests/.tmp*
+test-results/
+playwright-report/
+
+# OS / Editor
+.DS_Store
+Thumbs.db

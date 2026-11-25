@@ -1,0 +1,190 @@
+@import "tailwindcss";
+
+:root {
+  /* CareScript Official Teal, Purple & Lavender Palette */
+  --color-sidebar: #003B46;
+  --color-sidebar-hover: #004B55;
+  --color-dark-teal: #004B55;
+  --color-primary: #009C95;
+  --color-primary-hover: #00857F;
+  --color-accent: #12B8AC;
+  --color-accent-hover: #0FA196;
+  --color-secondary: #69728A;
+  --color-purple: #633BE8;
+  --color-purple-hover: #522CD6;
+  --color-light-purple: #F0ECFF;
+  --color-background: #F3F4FF;
+  --color-light-blue: #E8F0FF;
+  --color-surface: #FFFFFF;
+  --color-text: #17183D;
+  --color-text-muted: #69728A;
+  --color-border: #DCE2F5;
+
+  /* Semantic Status Colors */
+  --color-success: #169862;
+  --color-success-bg: #E6F7F0;
+  --color-upcoming: #2E6DE0;
+  --color-upcoming-bg: #E8F0FF;
+  --color-danger: #DC3E4B;
+  --color-danger-bg: #FDECEE;
+  --color-warning: #B7791F;
+  --color-warning-bg: #FEF5E7;
+
+  --shadow-card: 0 2px 12px rgba(23, 24, 61, 0.06);
+  --shadow-elevated: 0 10px 28px rgba(23, 24, 61, 0.14);
+}
+
+[data-theme="dark"] {
+  --color-sidebar: #002C35;
+  --color-sidebar-hover: #004B55;
+  --color-dark-teal: #12B8AC;
+  --color-primary: #009C95;
+  --color-primary-hover: #12B8AC;
+  --color-accent: #12B8AC;
+  --color-accent-hover: #25CFC2;
+  --color-secondary: #98A2B8;
+  --color-purple: #7B5AF0;
+  --color-purple-hover: #8D70F5;
+  --color-light-purple: #221D42;
+  --color-background: #0E1722;
+  --color-light-blue: #182738;
+  --color-surface: #13202E;
+  --color-text: #EEF1FC;
+  --color-text-muted: #9CA6BF;
+  --color-border: #26394D;
+
+  --color-success: #34C787;
+  --color-success-bg: rgba(52, 199, 135, 0.16);
+  --color-upcoming: #5E95F5;
+  --color-upcoming-bg: rgba(94, 149, 245, 0.18);
+  --color-danger: #F06A75;
+  --color-danger-bg: rgba(240, 106, 117, 0.16);
+  --color-warning: #EBB354;
+  --color-warning-bg: rgba(235, 179, 84, 0.16);
+
+  --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.32);
+  --shadow-elevated: 0 10px 28px rgba(0, 0, 0, 0.5);
+}
+
+html {
+  font-family: 'Inter', 'Noto Sans Kannada', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 16px;
+  color: var(--color-text);
+  background-color: var(--color-background);
+  -webkit-font-smoothing: antialiased;
+}
+
+html[data-text-size="small"] {
+  font-size: 14px;
+}
+
+html[data-text-size="medium"] {
+  font-size: 16px;
+}
+
+html[data-text-size="large"] {
+  font-size: 18.5px;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--color-background);
+  color: var(--color-text);
+  transition: background-color 0.2s ease, color 0.2s ease;
+  overflow-x: hidden;
+}
+
+*:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.cs-card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 1rem;
+  box-shadow: var(--shadow-card);
+}
+
+.cs-panel-info {
+  background-color: var(--color-light-blue);
+  border: 1px solid var(--color-border);
+  border-radius: 1rem;
+}
+
+.cs-btn-primary {
+  background-color: var(--color-primary);
+  color: #FFFFFF;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.cs-btn-primary:hover:not(:disabled) {
+  background-color: var(--color-primary-hover);
+}
+
+.cs-btn-primary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.cs-btn-accent {
+  background-color: var(--color-primary);
+  color: #FFFFFF;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  transition: background-color 0.15s ease;
+}
+
+.cs-btn-accent:hover:not(:disabled) {
+  background-color: var(--color-accent);
+}
+
+.cs-btn-purple {
+  background-color: var(--color-purple);
+  color: #FFFFFF;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  transition: background-color 0.15s ease;
+}
+
+.cs-btn-purple:hover:not(:disabled) {
+  background-color: var(--color-purple-hover);
+}
+
+.cs-btn-secondary {
+  background-color: var(--color-light-blue);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  font-weight: 600;
+  transition: background-color 0.15s ease;
+}
+
+.cs-btn-secondary:hover:not(:disabled) {
+  background-color: var(--color-light-purple);
+}
+
+.cs-input {
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  border: 1.5px solid var(--color-border);
+  border-radius: 0.75rem;
+  padding: 0.65rem 0.9rem;
+  width: 100%;
+  transition: border-color 0.15s ease;
+}
+
+.cs-input:focus {
+  border-color: var(--color-primary);
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
