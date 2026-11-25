@@ -54,7 +54,7 @@ Email/password confirmation and password recovery links return through `/auth/ca
 | `npm run build` | Create the production frontend bundle |
 | `npm run check` | Typecheck, lint, and unit tests |
 | `npm test` | Run the unit test suite directly |
-| `npm run test:e2e` | Chromium auth-screen smoke test; does not sign into Google or exercise signed-in workflows |
+| `npm run test:e2e` | Chromium auth and registration validation, mobile overflow, OAuth error, and callback redirect smoke tests; does not sign into Google or exercise signed-in data workflows |
 | `npm run test:live` | Anonymous request and optional authenticated RLS/Gemini checks against cloud Supabase |
 
 To run authenticated live checks, provision two dedicated Supabase email test accounts and set `SUPABASE_TEST_USER_A_EMAIL`, `SUPABASE_TEST_USER_A_PASSWORD`, `SUPABASE_TEST_USER_B_EMAIL`, and `SUPABASE_TEST_USER_B_PASSWORD` in `.env.local`. The tests create/update their CareScript profile rows; use dedicated test accounts.

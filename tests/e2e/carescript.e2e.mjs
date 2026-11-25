@@ -174,3 +174,46 @@ test('Auth screen handles OAuth errors and does not expose demo login', async ()
     ]);
   }
 });
+
+test('Registration form validates input and remains usable on a mobile viewport', async () => {
+  const context = await browser.newContext({ viewport: { width: 375, height: 812 } });
+  const page = await context.newPage();
+  page.setDefaultTimeout(8000);
+
+  try {
+    await page.goto(baseUrl, { waitUntil: 'domcontentloaded' });
+    await page.getByRole('heading', { name: /Welcome back/i }).waitFor();
+
+    const layout = await page.evaluate(() => ({
+      viewportWidth: document.documentElement.clientWidth,
+      contentWidth: document.documentElement.scrollWidth,
+    }));
+    assert.ok(
+      layout.contentWidth <= layout.viewportWidth,
+      `Auth screen should not overflow horizontally on mobile: ${JSON.stringify(layout)}`
+    );
+
+    await page.getByRole('tab', { name: 'Create Account' }).click();
+    await page.getByRole('heading', { name: /Create your CareScript account/i }).waitFor();
+    await page.getByRole('button', { name: 'Create Account', exact: true }).click();
+    await page.getByRole('alert').getByText(/Please enter a valid email address/i).waitFor();
+
+    await page.getByLabel('Email Address').fill('patient@example.com');
+    await page.getByRole('button', { name: 'Create Account', exact: true }).click();
+    await page.getByRole('alert').getByText(/Please enter your name/i).waitFor();
+
+    await page.getByLabel('Full Name').fill('CareScript Patient');
+    await page.getByRole('textbox', { name: 'Password' }).fill('short');
+    await page.getByRole('button', { name: 'Create Account', exact: true }).click();
+    await page.getByRole('alert').getByText(/Password must be at least 6 characters/i).waitFor();
+
+    await page.getByRole('textbox', { name: 'Password' }).fill('valid-password');
+    await page.getByRole('button', { name: 'Show password' }).click();
+    assert.equal(await page.getByRole('textbox', { name: 'Password' }).getAttribute('type'), 'text');
+  } finally {
+    await Promise.race([
+      context.close().catch(() => {}),
+      new Promise((resolve) => setTimeout(resolve, 1500)),
+    ]);
+  }
+});

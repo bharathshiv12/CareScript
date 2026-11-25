@@ -4,9 +4,9 @@
 
 | Feature | Test case / command | Expected result | Actual result | Status / evidence |
 |---|---|---|---|---|
-| Frontend types, lint, unit | `npm run check` | TypeScript, lint/security hygiene, unit suite pass | Typecheck/lint passed; 12/12 unit tests passed | PASS — command output, 2026-11-25 |
+| Frontend types, lint, unit | `npm run check` | TypeScript, lint/security hygiene, unit suite pass | Typecheck/lint passed; 14/14 unit tests passed, including OAuth callback routing and deterministic age-boundary checks | PASS — command output, 2026-11-25 |
 | Production bundle | `npm run build` | Production assets generated without errors | Build passed; largest chunks React 223.08 kB, Supabase 230.49 kB, gzip 69.17/60.05 kB; no >500 kB warning | PASS — Vite output |
-| Browser smoke | `npm run test:e2e` | Auth screen renders and callback error handling works | One Chromium smoke test passed; also checks removed demo login | PASS — 1/1; not an authenticated workflow suite |
+| Browser smoke | `npm run test:e2e` | Auth screen renders, form validation works, and mobile layout has no horizontal overflow | Two Chromium tests passed: OAuth error/demo-login checks and mobile registration validation including password visibility | PASS — 2/2; does not sign into Google or exercise authenticated workflows |
 | Anonymous database access | `npm run test:live` | Unauthenticated profile/RPC/storage requests denied | Probes passed against connected project | PASS — integration test output |
 | Edge Function auth | `npm run test:live` | Missing/malformed bearer tokens rejected for both functions | Both functions rejected unauthenticated/invalid-token requests | PASS — integration test output; `verify_jwt=true` on deployed functions |
 | RPC role grants | Read-only live SQL permission check after migration | Public app RPCs denied to `anon`, available to `authenticated` | All ten app RPCs show anon=false/authenticated=true; trigger helper false/false | PASS — live permission query after migration |

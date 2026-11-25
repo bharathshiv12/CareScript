@@ -56,6 +56,18 @@ test('OAuth callback URL follows the current site origin in production and local
   );
 });
 
+test('Vercel serves the OAuth callback through the SPA entry point', () => {
+  const vercelConfig = JSON.parse(readFileSync('frontend/vercel.json', 'utf8')) as {
+    rewrites?: Array<{ source: string; destination: string }>;
+  };
+  assert.ok(
+    vercelConfig.rewrites?.some(
+      ({ source, destination }) => source === '/auth/callback' && destination === '/'
+    ),
+    'OAuth callback deep links must load the SPA so its PKCE handler can exchange the code'
+  );
+});
+
 test('resolveDoseStatus honors explicit logs including backend grace-period upcoming', () => {
   const takenLog: DoseLog = {
     id: 'r1_2025-01-01_08:00',
@@ -233,6 +245,12 @@ test('calendar date utilities and 12h formatting behave correctly', () => {
 test('computeAgeFromDob calculates age accurately and handles invalid inputs', () => {
   assert.equal(computeAgeFromDob(null), '');
   assert.equal(computeAgeFromDob('not-a-date'), '');
+
+  const beforeBirthday = new Date(2026, 6, 14);
+  const onBirthday = new Date(2026, 6, 15);
+  assert.equal(computeAgeFromDob('1986-07-15', beforeBirthday), '39');
+  assert.equal(computeAgeFromDob('1986-07-15', onBirthday), '40');
+  assert.equal(computeAgeFromDob('1986-02-30', onBirthday), '');
 
   const now = new Date();
   const y = now.getFullYear();

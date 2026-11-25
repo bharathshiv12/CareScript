@@ -14,11 +14,27 @@ import type {
 } from '../types/carescript';
 import { getTodayKey, toDateKey } from '../utils/dateUtils';
 
-export function computeAgeFromDob(dob?: string | null): string {
+export function computeAgeFromDob(dob?: string | null, today = new Date()): string {
   if (!dob) return '';
-  const birth = new Date(dob);
+
+  // PostgreSQL `date` values are returned as YYYY-MM-DD. Parse those as local
+  // calendar dates so UTC conversion cannot move the birthday to the prior day.
+  const dateOnly = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dob);
+  let birth: Date;
+  if (dateOnly) {
+    const [, year, month, day] = dateOnly;
+    birth = new Date(0);
+    birth.setHours(0, 0, 0, 0);
+    birth.setFullYear(Number(year), Number(month) - 1, Number(day));
+    if (
+      birth.getFullYear() !== Number(year) ||
+      birth.getMonth() !== Number(month) - 1 ||
+      birth.getDate() !== Number(day)
+    ) return '';
+  } else {
+    birth = new Date(dob);
+  }
   if (Number.isNaN(birth.getTime())) return '';
-  const today = new Date();
   let age = today.getFullYear() - birth.getFullYear();
   const m = today.getMonth() - birth.getMonth();
   if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
