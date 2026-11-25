@@ -1,4 +1,5 @@
 import { createClient, type User } from '@supabase/supabase-js';
+import { getOAuthCallbackUrl } from './oauthCallback';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string | undefined;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
@@ -26,7 +27,7 @@ export function requireSupabase() {
 
 export function getSupabaseCallbackUrl(): string {
   if (typeof window === 'undefined') return '';
-  return `${window.location.origin}/auth/callback`;
+  return getOAuthCallbackUrl(window.location.origin);
 }
 
 export async function signInWithGoogle(): Promise<void> {

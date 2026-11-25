@@ -148,6 +148,23 @@ test('Auth screen handles OAuth errors and does not expose demo login', async ()
     await page.getByRole('button', { name: 'Sign In', exact: true }).click();
     await page.getByRole('alert').getByText(/Please enter a valid email address/i).waitFor();
 
+    // Capture the OAuth authorization request locally instead of contacting Google.
+    // This verifies the deployed code derives redirect_to from the current origin.
+    const googleButton = page.getByRole('button', { name: /Continue with Google/i });
+    if (await googleButton.count()) {
+      let authorizeRequestUrl = '';
+      await page.route('**/auth/v1/authorize**', async (route) => {
+        authorizeRequestUrl = route.request().url();
+        await route.fulfill({ status: 200, contentType: 'text/html', body: 'OAuth request captured for test.' });
+      });
+      await googleButton.click();
+      await page.waitForURL(/\/auth\/v1\/authorize/);
+      assert.equal(
+        new URL(authorizeRequestUrl).searchParams.get('redirect_to'),
+        `${baseUrl}/auth/callback`
+      );
+    }
+
     assert.deepEqual(pageErrors, [], `Uncaught page errors observed: ${pageErrors.join('; ')}`);
     assert.deepEqual(consoleErrors, [], `Browser console errors observed: ${consoleErrors.join('; ')}`);
   } finally {

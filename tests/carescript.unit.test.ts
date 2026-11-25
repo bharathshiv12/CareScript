@@ -20,6 +20,7 @@ import {
 } from '../frontend/src/services/careScriptApi';
 import { sendAiBuddyMessage } from '../frontend/src/services/aiService';
 import { TRANSLATIONS } from '../frontend/src/i18n/translations';
+import { getOAuthCallbackUrl } from '../frontend/src/lib/oauthCallback';
 import type { DoseLog, MedicationReminder, Prescription } from '../frontend/src/types/carescript';
 
 function collectKeys(obj: Record<string, unknown>, prefix = ''): string[] {
@@ -43,6 +44,17 @@ function getByPath(obj: Record<string, unknown>, path: string): unknown {
     return undefined;
   }, obj);
 }
+
+test('OAuth callback URL follows the current site origin in production and local development', () => {
+  assert.equal(
+    getOAuthCallbackUrl('https://carescript-chi.vercel.app'),
+    'https://carescript-chi.vercel.app/auth/callback'
+  );
+  assert.equal(
+    getOAuthCallbackUrl('http://localhost:5173/'),
+    'http://localhost:5173/auth/callback'
+  );
+});
 
 test('resolveDoseStatus honors explicit logs including backend grace-period upcoming', () => {
   const takenLog: DoseLog = {

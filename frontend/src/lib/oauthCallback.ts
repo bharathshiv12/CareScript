@@ -1,5 +1,9 @@
 const CALLBACK_ERROR_KEY = 'carescript_oauth_callback_error';
 
+export function getOAuthCallbackUrl(origin: string): string {
+  return `${origin.replace(/\/+$/, '')}/auth/callback`;
+}
+
 export function recordOAuthCallbackError(message: string): void {
   try {
     sessionStorage.setItem(CALLBACK_ERROR_KEY, message);

@@ -10,8 +10,13 @@ max_rows = 1000
 
 [auth]
 enabled = true
-site_url = "http://localhost:5173"
-additional_redirect_urls = ["http://localhost:5173/auth/callback"]
+# Production default. The frontend sends its current origin explicitly, and
+# local development remains allowed as a separate callback below.
+site_url = "https://carescript-chi.vercel.app"
+additional_redirect_urls = [
+  "https://carescript-chi.vercel.app/auth/callback",
+  "http://localhost:5173/auth/callback",
+]
 
 [functions.ai-buddy]
 verify_jwt = true

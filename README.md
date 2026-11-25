@@ -39,7 +39,7 @@ npx supabase secrets set GEMINI_MODEL="gemini-3.8-flash" --project-ref vcceikmnj
 1. In Supabase Dashboard → Authentication → Providers → Google, enable Google and save the OAuth Web client ID and secret.
 2. Use the callback URL displayed by Supabase as the Google OAuth client's authorized redirect URI.
 3. In Google Cloud Console, authorize the app origin for local development (`http://localhost:5173`) and your eventual production origin.
-4. In Supabase Authentication → URL Configuration, set the Site URL to the production origin and allow `http://localhost:5173/auth/callback` plus `<production-origin>/auth/callback`.
+4. In Supabase Authentication → URL Configuration, set the Site URL to `https://carescript-chi.vercel.app`. Add these exact Redirect URLs: `https://carescript-chi.vercel.app/auth/callback` and `http://localhost:5173/auth/callback`. Supabase must allow each `redirectTo` URL or it falls back to the Site URL.
 5. Configure the same `VITE_SUPABASE_URL` and publishable/anon key for the production build environment.
 
 Email/password confirmation and password recovery links return through `/auth/callback`. If email signup is enabled, configure SMTP in Supabase for reliable delivery.
