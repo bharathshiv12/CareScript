@@ -1,5 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { CARESCRIPT_CONTRACT } from '../backend/shared/careScriptContract.mjs';
 import {
   buildScheduleForDate,
   calculateAdherence,
@@ -9,16 +11,16 @@ import {
   getWeekDates,
   resolveDoseStatus,
   toDateKey,
-} from '../src/utils/dateUtils';
+} from '../frontend/src/utils/dateUtils';
 import {
   computeAgeFromDob,
   formatFriendlyBackendError,
+  resolvePrescriptionMimeType,
   validatePrescriptionFileContent,
-} from '../src/services/careScriptApi';
-import { sendAiBuddyMessage } from '../src/services/aiService';
-import { ensureSupabaseRoleClaim } from '../src/lib/firebase';
-import { TRANSLATIONS } from '../src/i18n/translations';
-import type { DoseLog, MedicationReminder, Prescription } from '../src/types/carescript';
+} from '../frontend/src/services/careScriptApi';
+import { sendAiBuddyMessage } from '../frontend/src/services/aiService';
+import { TRANSLATIONS } from '../frontend/src/i18n/translations';
+import type { DoseLog, MedicationReminder, Prescription } from '../frontend/src/types/carescript';
 
 function collectKeys(obj: Record<string, unknown>, prefix = ''): string[] {
   const keys: string[] = [];
@@ -236,14 +238,14 @@ test('computeAgeFromDob calculates age accurately and handles invalid inputs', (
 
 test('formatFriendlyBackendError maps cryptic PostgREST and Edge Function errors', () => {
   const jwtErr = formatFriendlyBackendError(new Error('No suitable key or wrong key type (PGRST301)'));
-  assert.match(jwtErr, /Third-Party Auth/i);
+  assert.match(jwtErr, /Supabase session/i);
   assert.doesNotMatch(jwtErr, /PGRST301/);
 
   const rlsErr = formatFriendlyBackendError(new Error('permission denied for table profiles (42501)'));
-  assert.match(rlsErr, /permission/i);
+  assert.match(rlsErr, /row security/i);
 
   const geminiErr = formatFriendlyBackendError(new Error('GEMINI API key is not configured (503)'));
-  assert.match(geminiErr, /GEMINI_API_KEY/i);
+  assert.match(geminiErr, /Gemini AI service/i);
 });
 
 test('validatePrescriptionFileContent checks extensions, size bounds, and magic headers', async () => {
@@ -366,39 +368,36 @@ test('EN and KN translations preserve full key parity and non-empty strings', ()
   }
 });
 
-test('ensureSupabaseRoleClaim fast-paths existing role claim and refreshes when initially missing', async () => {
-  let cachedCalls = 0;
-  let forcedCalls = 0;
+test('resolvePrescriptionMimeType normalizes image/jpg and empty MIME types from extensions', () => {
+  assert.equal(resolvePrescriptionMimeType(new File(['a'], 'scan.JPG', { type: '' })), 'image/jpeg');
+  assert.equal(
+    resolvePrescriptionMimeType(new File(['a'], 'scan.jpg', { type: 'image/jpg' })),
+    'image/jpeg'
+  );
+  assert.equal(resolvePrescriptionMimeType(new File(['a'], 'scan.png', { type: '' })), 'image/png');
+  assert.equal(
+    resolvePrescriptionMimeType(new File(['a'], 'scan.pdf', { type: '' })),
+    'application/pdf'
+  );
+});
 
-  const alreadyClaimedUser = {
-    uid: 'user-ready',
-    getIdTokenResult: async (forceRefresh?: boolean) => {
-      if (forceRefresh) forcedCalls += 1;
-      else cachedCalls += 1;
-      return { token: 'ready-jwt-placeholder', claims: { role: 'authenticated' } };
-    },
-  } as unknown as Parameters<typeof ensureSupabaseRoleClaim>[0];
+test('formatFriendlyBackendError translates rate limit, timeout, model, and API key failures cleanly', () => {
+  assert.match(formatFriendlyBackendError(new Error('429 rate limit exceeded')), /rate limit/i);
+  assert.match(formatFriendlyBackendError(new Error('Request timed out (504)')), /timed out/i);
+  assert.match(formatFriendlyBackendError(new Error('422 GEMINI_MODEL invalid')), /model/i);
+  assert.match(
+    formatFriendlyBackendError(new Error('502 Gemini API key error')),
+    /Gemini AI service/i
+  );
+});
 
-  const immediateToken = await ensureSupabaseRoleClaim(alreadyClaimedUser);
-  assert.equal(immediateToken, 'ready-jwt-placeholder');
-  assert.equal(cachedCalls, 1);
-  assert.equal(forcedCalls, 0);
+test('Backend shared contract matches Edge Function safety limits and model defaults', () => {
+  assert.equal(CARESCRIPT_CONTRACT.authProvider, 'supabase');
+  assert.equal(CARESCRIPT_CONTRACT.ai.defaultGeminiModel, 'gemini-3.8-flash');
+  assert.equal(CARESCRIPT_CONTRACT.prescriptionUpload.maxBytes, 10 * 1024 * 1024);
 
-  let delayedForceCalls = 0;
-  const delayedClaimUser = {
-    uid: 'user-needs-refresh',
-    getIdTokenResult: async (forceRefresh?: boolean) => {
-      if (!forceRefresh) {
-        return { token: 'stale-jwt-placeholder', claims: {} };
-      }
-      delayedForceCalls += 1;
-      return delayedForceCalls >= 2
-        ? { token: 'refreshed-jwt-placeholder', claims: { role: 'authenticated' } }
-        : { token: 'still-stale-placeholder', claims: {} };
-    },
-  } as unknown as Parameters<typeof ensureSupabaseRoleClaim>[0];
-
-  const refreshedToken = await ensureSupabaseRoleClaim(delayedClaimUser, 3);
-  assert.equal(refreshedToken, 'refreshed-jwt-placeholder');
-  assert.equal(delayedForceCalls, 2);
+  const geminiHelper = readFileSync('supabase/functions/_shared/gemini.ts', 'utf8');
+  assert.match(geminiHelper, /store:\s*false/);
+  assert.match(geminiHelper, /429/);
+  assert.match(geminiHelper, /504/);
 });

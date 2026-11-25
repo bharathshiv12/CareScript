@@ -2,12 +2,12 @@ import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2';
 
 export interface AuthContext {
   supabase: SupabaseClient;
-  firebaseUid: string;
+  userId: string;
 }
 
 /**
- * Creates a user-scoped Supabase client using the incoming Firebase JWT
- * and verifies that Supabase Third-Party Auth accepts it + maps to a valid Firebase UID.
+ * Creates a user-scoped Supabase client using the incoming Supabase Auth JWT
+ * and verifies the token with Supabase Auth before any user-scoped database work.
  * Never uses the service_role key.
  */
 export async function requireAuthenticatedUser(req: Request): Promise<AuthContext> {
@@ -35,18 +35,15 @@ export async function requireAuthenticatedUser(req: Request): Promise<AuthContex
     },
   });
 
-  // Verify token validity and Firebase project claim directly inside Postgres RLS/JWT validator
-  const { data: uid, error } = await supabase.rpc('firebase_uid');
-  if (error || !uid || typeof uid !== 'string') {
+  const accessToken = authHeader.slice('Bearer '.length).trim();
+  if (!accessToken) throw new ResponseError(401, 'Missing Authorization bearer token');
+
+  const { data: authData, error } = await supabase.auth.getUser(accessToken);
+  if (error || !authData.user?.id) {
     throw new ResponseError(401, 'Invalid or expired authentication token');
   }
 
-  const { data: validProject, error: projErr } = await supabase.rpc('is_carescript_firebase_jwt');
-  if (projErr || validProject !== true) {
-    throw new ResponseError(403, 'Authentication token is not authorized for CareScript');
-  }
-
-  return { supabase, firebaseUid: uid };
+  return { supabase, userId: authData.user.id };
 }
 
 export class ResponseError extends Error {

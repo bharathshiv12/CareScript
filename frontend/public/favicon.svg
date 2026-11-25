@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <defs>
+    <linearGradient id="tile" x1="16" y1="9" x2="82" y2="94" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#087F83" />
+      <stop offset="1" stop-color="#003B46" />
+    </linearGradient>
+    <linearGradient id="heart" x1="18" y1="27" x2="73" y2="76" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#10D4C2" />
+      <stop offset="0.54" stop-color="#087F9B" />
+      <stop offset="1" stop-color="#7139D6" />
+    </linearGradient>
+    <linearGradient id="swoosh" x1="12" y1="66" x2="84" y2="69" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#11D5C2" />
+      <stop offset="0.58" stop-color="#FFFFFF" />
+      <stop offset="1" stop-color="#0AB7AC" />
+    </linearGradient>
+  </defs>
+  <rect width="100" height="100" rx="25" fill="url(#tile)" />
+  <rect x="1.25" y="1.25" width="97.5" height="97.5" rx="24" stroke="#75E2DA" stroke-opacity=".42" stroke-width="2.5" />
+  <g transform="rotate(11 62 39)">
+    <rect x="48" y="13" width="35" height="55" rx="6" fill="#F9FEFF" />
+    <text x="55" y="39" fill="#063D53" font-family="Georgia,serif" font-size="17" font-weight="700">Rx</text>
+    <path d="M69 34h8M69 43h8M56 52h21M56 58h17" stroke="#6D9FB0" stroke-width="2.4" stroke-linecap="round" />
+  </g>
+  <path d="M45 77 22.4 56.3C9.5 44.5 14.9 27 29.8 27c7.3 0 12.5 4.1 15.2 11 2.8-6.9 8-11 15.3-11 15 0 20.3 17.5 7.4 29.3L45 77Z" fill="url(#heart)" />
+  <path d="M39.5 43.5h11v8h8v11h-8v8h-11v-8h-8v-11h8v-8Z" fill="#FFFFFF" />
+  <path d="M11 65.5c9.4 13.8 35.5 12.6 54.8-6.1 7.6-7.4 13.3-9.2 19.5-4.7" stroke="url(#swoosh)" stroke-width="4.5" stroke-linecap="round" />
+  <g transform="rotate(42 73 70)">
+    <rect x="66" y="57" width="15" height="29" rx="7.5" fill="#F7FFFF" stroke="#063B46" stroke-width="2.5" />
+    <path d="M67 71.5h13" stroke="#0AACA5" stroke-width="1.8" />
+  </g>
+  <path d="m17 20 5 4m3-12 2 7m-13 6 7 1" stroke="#20E0CD" stroke-width="3.5" stroke-linecap="round" />
+</svg>

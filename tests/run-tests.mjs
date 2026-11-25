@@ -13,6 +13,9 @@ try {
     bundle: true,
     platform: 'node',
     format: 'esm',
+    alias: {
+      '@': resolve('frontend/src'),
+    },
     define: {
       'import.meta.env': '{}',
     },

@@ -19,6 +19,7 @@ dist-ssr/
 firebase-debug.log
 firebase-debug.*.log
 .supabase/
+supabase/.temp/
 
 # Test artifacts
 tests/.tmp*

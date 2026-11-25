@@ -1,27 +1,28 @@
 {
-  "name": "carescript",
+  "name": "carescript-workspace",
   "private": true,
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "preview": "vite preview",
-    "test": "node tests/run-tests.mjs"
-  },
-  "dependencies": {
-    "@supabase/supabase-js": "^2.119.2",
-    "firebase": "^13.4.0",
-    "lucide-react": "^0.469.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "install:all": "npm install && npm --prefix frontend install",
+    "dev": "node scripts/dev-all.mjs",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "dev:backend": "node scripts/dev-backend.mjs",
+    "build": "npm --prefix frontend run build",
+    "test": "node tests/run-tests.mjs",
+    "test:live": "node --test --env-file=.env.local tests/integration/backend-security.test.mjs",
+    "test:e2e": "node scripts/run-e2e.mjs",
+    "lint": "node scripts/run-lint.mjs",
+    "check": "npm --prefix frontend run typecheck && npm run lint && npm test"
   },
   "devDependencies": {
-    "@tailwindcss/vite": "^4.0.0",
-    "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0",
-    "@vitejs/plugin-react": "^4.3.4",
-    "typescript": "^5.7.2",
-    "vite": "^6.0.5"
+    "@eslint/js": "^9.39.0",
+    "concurrently": "^9.1.2",
+    "esbuild": "^0.25.1",
+    "eslint": "^9.39.0",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "globals": "^15.15.0",
+    "playwright-core": "^1.51.1",
+    "typescript-eslint": "^8.26.0"
   }
 }
